@@ -13,13 +13,17 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		panel.webview.html = getWebviewContent();
+		// Resolve the local image path
+		const imagePath = vscode.Uri.joinPath(context.extensionUri, 'src/assets/local.png');
+		const imageUri = panel.webview.asWebviewUri(imagePath);
+
+		panel.webview.html = getWebviewContent(imageUri);
 	});
 
 	context.subscriptions.push(disposable);
 }
 
-function getWebviewContent() {
+function getWebviewContent(imageUri: vscode.Uri) {
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +33,7 @@ function getWebviewContent() {
 	<style>
 		body {
 			display: flex;
+			flex-direction: column;
 			justify-content: center;
 			align-items: center;
 			height: 100vh;
@@ -42,7 +47,10 @@ function getWebviewContent() {
 	</style>
 </head>
 <body>
-	<img src="https://placehold.co/600x400.png" alt="Placeholder Image" />
+	<h2>Remote image</h2>
+	<img width="200" src="https://placehold.co/600x400.png" alt="Placeholder Image" />
+	<h2>Internal image</h2>
+	<img width="200" src="${imageUri}" alt="Local Image" />
 </body>
 </html>`;
 }
